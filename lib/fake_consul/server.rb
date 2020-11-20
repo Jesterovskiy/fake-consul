@@ -82,6 +82,11 @@ module FakeConsul
         self.clear
         self.merge!(restored_data)
       end
+    rescue EOFError
+      # do nothing
+    rescue StandardError => e
+      p "Error in Fake Consul #{e.message}"
+      return
     end
 
     # Path to marshalled file
