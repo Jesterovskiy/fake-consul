@@ -13,8 +13,17 @@ module FakeConsul
     end
 
     def get(key, scope = :first, options = {}, meta = nil)
-      service = services.select { |hash| hash['ServiceName'] == key.to_s }.first
-      OpenStruct.new(service)
+      services_by_name = services.select { |hash| hash['ServiceName'] == key.to_s }
+
+      if scope == :first
+        OpenStruct.new(services_by_name.first)
+      elsif scope == :last
+        OpenStruct.new(services_by_name.last)
+      elsif scope == :all
+        services_by_name.map { |s| OpenStruct.new(s) }
+      else
+        raise ArgumentError, "Unsupported scope #{scope}. Use one of 'first, last, all'"
+      end
     end
 
     # Fake register
@@ -26,7 +35,6 @@ module FakeConsul
     # @return [Boolean] true
     def register(definition, options = {})
       new_service = build_service(definition.stringify_keys)
-      deregister(new_service['ServiceName'])
       services.push new_service
       persist!
     end
@@ -45,7 +53,6 @@ module FakeConsul
 
     def register_external(definition, options = {})
       new_service = build_external_service(definition.stringify_keys)
-      deregister(new_service['ServiceName'])
       services.push new_service
       persist!
     end
