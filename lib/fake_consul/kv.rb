@@ -2,7 +2,7 @@ require "active_support/hash_with_indifferent_access"
 require "tmpdir"
 
 module FakeConsul
-  class Server < HashWithIndifferentAccess
+  class Kv < HashWithIndifferentAccess
 
     def initialize
       restore!
@@ -24,7 +24,7 @@ module FakeConsul
       if options[:recurse]
         find_keys_recursive(key)
       else
-        consul_export_format(key)
+        consul_value(key)
       end
     end
 
@@ -85,8 +85,7 @@ module FakeConsul
     rescue EOFError
       # do nothing
     rescue StandardError => e
-      p "Error in Fake Consul #{e.message}"
-      return
+      raise e
     end
 
     # Path to marshalled file
@@ -99,19 +98,15 @@ module FakeConsul
     # Returns the keys in the following format:
     #  'bar
     # @return String
-    def consul_export_format(key)
+    def consul_value(key)
       self[key].to_s
     end
 
     # Returns all keys that begin with the supplied `key`.
     #
-    # @return [Array<Hash>] e.g. [{key: 'foo', value: 'bar'}]
+    # @return [Array<String>] e.g. ['foo', 'bar', 'baz']
     def find_keys_recursive(key)
-      self.keys.select do |_key|
-        _key.to_s.start_with?(key.to_s)
-      end.map do |_key|
-        consul_export_format(_key)
-      end.flatten.first
+      self.keys.select { |_key| _key.to_s.start_with?(key.to_s) }.map { |_key| consul_value(_key) }
     end
 
     # Remove all keys that are nil

@@ -1,23 +1,24 @@
 require_relative '../spec_helper'
+require 'fake_consul/kv'
 
-describe FakeConsul::Server do
-  subject { FakeConsul::Server.new }
+RSpec.describe FakeConsul::Kv do
+  subject { FakeConsul::Kv.new }
 
   before { subject.clear }
 
   describe '#put' do
     it 'stores key into Hash' do
       subject.put('foo', 'bar')
-      subject['foo'].must_equal 'bar'
+      expect(subject['foo']).to eq 'bar'
     end
 
     it 'returns true' do
-      subject.put('foo', 'bar').must_equal true
+      expect(subject.put('foo', 'bar')).to eq true
     end
 
     it 'compacts the hash to remove keys with nil values' do
       subject.put('foo', nil)
-      subject.key?('foo').must_equal(false)
+      expect(subject.key?('foo')).to eq false
     end
   end
 
@@ -26,26 +27,25 @@ describe FakeConsul::Server do
 
     it 'delete key from Hash' do
       subject.delete('foo')
-      subject.key?('foo').must_equal false
+      expect(subject.key?('foo')).to eq false
     end
 
     it 'returns true' do
-      subject.put('foo', 'bar').must_equal true
+      expect(subject.put('foo', 'bar')).to eq true
     end
 
     it 'compacts the hash to remove keys with nil values' do
       subject.put('foo', nil)
-      subject.key?('foo').must_equal(false)
+      expect(subject.key?('foo')).to eq false
     end
   end
 
   describe '#get' do
     describe 'simple (no recursing)' do
       before { subject.put('foo', 'bar') }
-      let(:expected_value) { [{'key' => 'foo', 'value' => 'bar'}] }
 
       it 'retrieves key from Hash in an array' do
-        subject.get('foo').must_equal(expected_value)
+        expect(subject.get('foo')).to eq 'bar'
       end
     end
 
@@ -58,17 +58,11 @@ describe FakeConsul::Server do
       end
 
       let(:expected_value) do
-        [
-          {'key' => 'foo/bar/baz', 'value' => 'baz'},
-          {'key' => 'foo/bar/bif', 'value' => 'bif'},
-          {'key' => 'foo/bar/boz', 'value' => 'boz'},
-        ]
+        %w[baz bif boz]
       end
 
-      let(:unexpected_value) { [{'key' => 'foo/boom/boz', 'value' => 'boz'}] }
-
       it 'retrieves all keys beginning with supplied key from Hash in an array' do
-        subject.get('foo/bar/', recurse: true).must_equal(expected_value)
+        expect(subject.get('foo/bar/', recurse: true)).to eq expected_value
       end
     end
   end

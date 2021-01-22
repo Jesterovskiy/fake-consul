@@ -6,7 +6,7 @@ require 'fake_consul/version'
 Gem::Specification.new do |spec|
   spec.name          = "fake_consul"
   spec.version       = FakeConsul::VERSION
-  spec.authors       = ["Saimon Moore"]
+  spec.authors       = ["Saimon Moore", "Maksym Litvynov"]
   spec.email         = ["saimonmoore@gmail.com"]
   spec.summary       = %q{Fakes a consul server. Usecase is for feature specs using Diplomat client}
   spec.description   = %q{Fakes a consul server. Usecase is for feature specs using Diplomat client}
@@ -21,4 +21,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport"
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
 end
