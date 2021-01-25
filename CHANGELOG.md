@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v1.1.1] - 2021-01-25
+- Fix bug in register_external
+
 ## [v1.1.0] - 2021-01-22
 - Implement `:first`, `:last`, `:all` scopes in `Services.get`
 

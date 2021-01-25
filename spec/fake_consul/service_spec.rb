@@ -40,7 +40,7 @@ RSpec.describe FakeConsul::Service do
       end
 
       it 'gets :last service' do
-        expect(subject.get('test', :first)).to eq OpenStruct.new(service1)
+        expect(subject.get('test', :last)).to eq OpenStruct.new(service3)
       end
 
       it 'gets :all services' do
@@ -57,11 +57,6 @@ RSpec.describe FakeConsul::Service do
     let(:expected_result) do
       OpenStruct.new(ServiceID: 'Foobar#123', ServiceName: 'foobar',
                      ServiceAddress: 'localhost', ServicePort: 3003, ServiceTags: %w[foo bar])
-    end
-
-    let(:expected_result2) do
-      OpenStruct.new(ServiceID: 'Foobar#123', ServiceName: 'foobar',
-                     ServiceAddress: nil, ServicePort: 4000, ServiceTags: %w[foo bar])
     end
 
     it 'registers a service successfully' do
@@ -89,7 +84,7 @@ RSpec.describe FakeConsul::Service do
       {
         node: 'foobar_node',
         address: 'localhost',
-        service: { name: 'foobar_service', port: 3003 }
+        service: { service: 'foobar_service', port: 3003 }
       }
     end
 

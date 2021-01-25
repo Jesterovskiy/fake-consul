@@ -53,6 +53,7 @@ module FakeConsul
 
     def register_external(definition, options = {})
       new_service = build_external_service(definition.stringify_keys)
+      deregister_external(definition['ServiceName'], definition['Node'])
       services.push new_service
       persist!
     end
@@ -84,7 +85,11 @@ module FakeConsul
     def build_external_service(hash)
       hash.each_with_object({}) do |(key, value), h|
         if value.is_a?(Hash)
-          h.merge!(build_service(value.stringify_keys)) if key == 'service'
+          if key == 'service'
+            service = value.stringify_keys
+            service['name'] = service.delete'service'
+            h.merge!(build_service(service))
+          end
           next
         end
 
