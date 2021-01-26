@@ -108,11 +108,32 @@ RSpec.describe FakeConsul::Service do
     end
 
     it 'removes service from registration' do
-      subject.register(service_params)
+      subject.register_external(service_params)
       expect(subject.get('foobar_service')).to be
 
-      subject.deregister('foobar_service')
+      subject.deregister_external('foobar_service')
       expect(subject.get('foobar_service')).to eq OpenStruct.new
+    end
+  end
+
+  describe '#clear' do
+    let!(:service_params) do
+      { id: 'Foobar#123', name: 'foobar', address: 'localhost', port: 3003, tags: %w[foo bar] }
+    end
+
+    it 'stores and load to file' do
+      subject.register(service_params)
+      expect(subject.get('foobar')).to be
+      expect(FakeConsul::Service.new.get('foobar')).to be
+    end
+
+    it 'clears content successfully' do
+      subject.register(service_params)
+      expect(subject.get('foobar')).to be
+      subject.clear
+
+      expect(subject.get('foobar')).to eq OpenStruct.new
+      expect(FakeConsul::Service.new.get('foobar')).to eq OpenStruct.new
     end
   end
 end

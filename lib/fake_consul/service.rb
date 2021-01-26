@@ -69,6 +69,14 @@ module FakeConsul
       deregister(service_name, options)
     end
 
+    # Clear current data
+    # and delete backing marshalling file
+    def clear
+      services.clear
+      return unless File.exist?(db_file)
+      File.delete(db_file)
+    end
+
     private
 
     def build_service(hash)
